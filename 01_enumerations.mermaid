@@ -1,0 +1,39 @@
+---
+title: 1. Enumerations
+---
+classDiagram
+    class RoleName {
+        <<enumeration>>
+        ADMIN
+        TEACHER
+        STUDENT
+    }
+    class SessionStatus {
+        <<enumeration>>
+        SCHEDULED
+        ACTIVE
+        CLOSED
+    }
+    class AttendanceMethod {
+        <<enumeration>>
+        QR
+        FACE
+    }
+    class AttendanceStatus {
+        <<enumeration>>
+        PRESENT
+        LATE
+        ABSENT
+    }
+    class RiskLevel {
+        <<enumeration>>
+        SAFE
+        WARNING
+        HIGH_RISK
+        CRITICAL
+    }
+    class EligibilityStatus {
+        <<enumeration>>
+        EXAM_ELIGIBLE
+        NOT_ELIGIBLE
+    }

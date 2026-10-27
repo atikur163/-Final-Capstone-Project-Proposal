@@ -1,0 +1,57 @@
+---
+title: 2. Users and Roles
+---
+classDiagram
+    class RoleName {
+        <<enumeration>>
+        ADMIN
+        TEACHER
+        STUDENT
+    }
+    class Role {
+        +int id PK
+        +RoleName name
+        +datetime created_at
+        +datetime updated_at
+    }
+    class User {
+        +int id PK
+        +int role_id FK
+        +string email
+        +string password_hash
+        +bool is_active
+        +datetime created_at
+        +datetime updated_at
+        +set_password(string raw) void
+        +check_password(string raw) bool
+        +has_role(RoleName name) bool
+    }
+    class Student {
+        +int id PK
+        +int user_id FK
+        +int department_id FK
+        +int batch_id FK
+        +string student_code
+        +string full_name
+        +datetime created_at
+        +datetime updated_at
+    }
+    class Teacher {
+        +int id PK
+        +int user_id FK
+        +int department_id FK
+        +string full_name
+        +string designation
+        +datetime created_at
+        +datetime updated_at
+    }
+    class Department
+    class Batch
+
+    Role "1" -- "0..*" User
+    User "1" -- "0..1" Student
+    User "1" -- "0..1" Teacher
+    Department "1" -- "0..*" Student
+    Department "1" -- "0..*" Teacher
+    Batch "1" -- "0..*" Student
+    Role ..> RoleName

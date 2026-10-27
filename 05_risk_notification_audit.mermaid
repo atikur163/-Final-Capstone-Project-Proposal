@@ -1,0 +1,59 @@
+---
+title: 5. Risk, Notification, Audit and Settings
+---
+classDiagram
+    class RiskLevel {
+        <<enumeration>>
+        SAFE
+        WARNING
+        HIGH_RISK
+        CRITICAL
+    }
+    class RiskAlert {
+        +int id PK
+        +int student_id FK
+        +int course_offering_id FK
+        +RiskLevel level
+        +float current_percentage
+        +float max_possible_percentage
+        +datetime created_at
+    }
+    class EmailLog {
+        +int id PK
+        +string recipient
+        +string kind
+        +string dedupe_key UNIQUE
+        +string status
+        +datetime sent_at
+    }
+    class Notification {
+        +int id PK
+        +int user_id FK
+        +string message
+        +bool is_read
+        +datetime created_at
+    }
+    class AuditLog {
+        +int id PK
+        +int actor_id FK
+        +string action
+        +string entity
+        +int entity_id
+        +string reason
+        +datetime created_at
+    }
+    class SystemSetting {
+        +int id PK
+        +string key
+        +string value
+    }
+    class Student
+    class CourseOffering
+    class User
+
+    Student "1" -- "0..*" RiskAlert
+    CourseOffering "1" -- "0..*" RiskAlert
+    User "1" -- "0..*" Notification
+    User "1" -- "0..*" AuditLog
+    RiskAlert ..> RiskLevel
+    RiskAlert ..> EmailLog : warning email deduped via

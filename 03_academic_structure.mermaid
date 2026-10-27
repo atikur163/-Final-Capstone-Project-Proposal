@@ -1,0 +1,117 @@
+---
+title: 3. Academic Structure
+---
+classDiagram
+    class Department {
+        +int id PK
+        +string name
+        +string code
+    }
+    class AcademicSession {
+        +int id PK
+        +string name
+        +date start_date
+        +date end_date
+    }
+    class Year {
+        +int id PK
+        +int number
+        +string name
+    }
+    class Semester {
+        +int id PK
+        +int number
+        +string name
+    }
+    class Batch {
+        +int id PK
+        +int department_id FK
+        +int session_id FK
+        +int year_id FK
+        +int semester_id FK
+        +string section
+        +string name
+    }
+    class Course {
+        +int id PK
+        +int department_id FK
+        +string code
+        +string title
+        +float credit
+        +bool is_theory
+    }
+    class CourseOffering {
+        +int id PK
+        +int course_id FK
+        +int batch_id FK
+        +int semester_id FK
+        +int session_id FK
+        +int planned_classes
+        +int late_threshold_minutes
+    }
+    class TeacherCourseEligibility {
+        +int id PK
+        +int teacher_id FK
+        +int course_id FK
+    }
+    class TeacherAssignment {
+        +int id PK
+        +int teacher_id FK
+        +int course_offering_id FK
+        +validate_one_theory_rule() bool
+    }
+    class StudentEnrollment {
+        +int id PK
+        +int student_id FK
+        +int course_offering_id FK
+        +validate_current_semester() bool
+    }
+    class Routine {
+        +int id PK
+        +int course_offering_id FK
+        +int teacher_id FK
+        +int batch_id FK
+        +int day_of_week
+        +time start_time
+        +time end_time
+        +string room
+    }
+    class ClassSession {
+        <<Classes>>
+        +int id PK
+        +int routine_id FK
+        +date class_date
+        +datetime start_datetime
+        +bool is_conducted
+    }
+    class Student
+    class Teacher
+
+    Department "1" -- "0..*" Student
+    Department "1" -- "0..*" Teacher
+    Department "1" -- "0..*" Batch
+    Department "1" -- "0..*" Course
+
+    AcademicSession "1" -- "0..*" Batch
+    Year "1" -- "0..*" Batch
+    Semester "1" -- "0..*" Batch
+    Batch "1" -- "0..*" Student
+
+    Course "1" -- "0..*" CourseOffering
+    Batch "1" -- "0..*" CourseOffering
+    Semester "1" -- "0..*" CourseOffering
+    AcademicSession "1" -- "0..*" CourseOffering
+
+    Teacher "1" -- "0..*" TeacherCourseEligibility
+    Course "1" -- "0..*" TeacherCourseEligibility
+
+    Teacher "1" -- "0..*" TeacherAssignment
+    CourseOffering "1" -- "0..*" TeacherAssignment
+
+    Student "1" -- "0..*" StudentEnrollment
+    CourseOffering "1" -- "0..*" StudentEnrollment
+
+    CourseOffering "1" -- "0..*" Routine
+    Teacher "1" -- "0..*" Routine
+    Batch "1" -- "0..*" Routine
+    Routine "1" -- "0..*" ClassSession

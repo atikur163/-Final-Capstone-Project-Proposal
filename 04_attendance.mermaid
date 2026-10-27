@@ -1,0 +1,102 @@
+---
+title: 4. Attendance (Sessions, Records, QR, Face)
+---
+classDiagram
+    class SessionStatus {
+        <<enumeration>>
+        SCHEDULED
+        ACTIVE
+        CLOSED
+    }
+    class AttendanceMethod {
+        <<enumeration>>
+        QR
+        FACE
+    }
+    class AttendanceStatus {
+        <<enumeration>>
+        PRESENT
+        LATE
+        ABSENT
+    }
+    class AttendanceSession {
+        +int id PK
+        +int class_id FK
+        +int started_by FK
+        +AttendanceMethod method
+        +SessionStatus status
+        +datetime started_at
+        +datetime closed_at
+        +start(AttendanceMethod method) void
+        +close() void
+    }
+    class Attendance {
+        +int id PK
+        +int session_id FK
+        +int student_id FK
+        +AttendanceStatus status
+        +datetime arrival_time
+        +AttendanceMethod method
+        +bool is_corrected
+        +string correction_reason
+        +datetime created_at
+    }
+    note for Attendance "Unique constraint: (session_id, student_id)"
+    class LateRecord {
+        +int id PK
+        +int attendance_id FK
+        +int student_id FK
+        +int course_offering_id FK
+        +int minutes_late
+        +int consecutive_count
+    }
+    class AttendancePenalty {
+        +int id PK
+        +int student_id FK
+        +int course_offering_id FK
+        +int penalty_count
+        +datetime applied_at
+    }
+    class QRSessionToken {
+        +int id PK
+        +int session_id FK
+        +string token
+        +datetime issued_at
+        +datetime expires_at
+        +is_expired() bool
+    }
+    class FaceProfile {
+        +int id PK
+        +int student_id FK
+        +bytes embedding_encrypted
+        +int registered_by FK
+        +datetime created_at
+    }
+    class FaceVerificationLog {
+        +int id PK
+        +int session_id FK
+        +int student_id FK
+        +float similarity_score
+        +bool matched
+        +datetime created_at
+    }
+    class ClassSession
+    class Teacher
+    class Student
+    class CourseOffering
+
+    ClassSession "1" -- "0..*" AttendanceSession
+    Teacher "1" -- "0..*" AttendanceSession : starts
+    AttendanceSession "1" *-- "0..*" Attendance
+    Student "1" -- "0..*" Attendance
+    Attendance "1" -- "0..1" LateRecord
+    Student "1" -- "0..*" AttendancePenalty
+    CourseOffering "1" -- "0..*" AttendancePenalty
+    AttendanceSession "1" *-- "0..*" QRSessionToken
+    Student "1" -- "0..1" FaceProfile
+    AttendanceSession "1" -- "0..*" FaceVerificationLog
+    Student "1" -- "0..*" FaceVerificationLog
+
+    Attendance ..> AttendanceStatus
+    AttendanceSession ..> SessionStatus
+    AttendanceSession ..> AttendanceMethod

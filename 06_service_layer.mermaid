@@ -1,0 +1,78 @@
+---
+title: 6. Service Layer (Business Rules)
+---
+classDiagram
+    class AttendanceEngine {
+        +classify(datetime arrival, datetime start, int threshold) AttendanceStatus
+        +compute_effective_attendance(int student_id, int offering_id) float
+        +compute_percentage(int effective_present, int conducted) float
+        +maximum_possible(int effective_present, int remaining, int planned) float
+        +required_future_attendance(int student_id, int offering_id) int
+        +finalize_session(int session_id) void
+    }
+    class LatePenaltyService {
+        +count_consecutive_late(int student_id, int offering_id) int
+        +apply_penalty(int student_id, int offering_id) AttendancePenalty
+    }
+    class EligibilityService {
+        +float MIN_PERCENTAGE = 60.0
+        +evaluate(float percentage) EligibilityStatus
+    }
+    class RiskService {
+        +classify(float current, float required, float max_possible) RiskLevel
+        +is_recoverable(float max_possible) bool
+        +recalculate_all() void
+    }
+    class EnrollmentService {
+        +enroll(int student_id, int offering_id) StudentEnrollment
+    }
+    class AssignmentService {
+        +assign(int teacher_id, int offering_id) TeacherAssignment
+    }
+    class RoutineService {
+        +create_routine(dict data) Routine
+        +due_reminders() List~Routine~
+    }
+    class AuditService {
+        +log(int actor_id, string action, string entity, int entity_id, string reason) AuditLog
+    }
+    class EmailService {
+        +send_class_reminder(int teacher_id, int routine_id) void
+        +send_risk_warning(RiskAlert alert) void
+    }
+    class ReportService {
+        +export_csv(string report_type) bytes
+        +export_pdf(string report_type) bytes
+    }
+    class Attendance
+    class LateRecord
+    class AttendancePenalty
+    class RiskAlert
+    class EmailLog
+    class Notification
+    class StudentEnrollment
+    class TeacherAssignment
+    class TeacherCourseEligibility
+    class Routine
+    class AuditLog
+    class SystemSetting
+
+    AttendanceEngine ..> LatePenaltyService : uses
+    AttendanceEngine ..> EligibilityService : uses
+    AttendanceEngine ..> RiskService : uses
+    AttendanceEngine ..> Attendance : reads/writes
+    AttendanceEngine ..> AuditService : logs via
+    AttendanceEngine ..> SystemSetting : reads threshold
+    LatePenaltyService ..> LateRecord
+    LatePenaltyService ..> AttendancePenalty
+    RiskService ..> RiskAlert : creates
+    RiskService ..> EmailService : triggers
+    EmailService ..> EmailLog : dedupes via
+    EmailService ..> Notification
+    EnrollmentService ..> StudentEnrollment
+    AssignmentService ..> TeacherAssignment
+    AssignmentService ..> TeacherCourseEligibility
+    RoutineService ..> Routine
+    AuditService ..> AuditLog
+    AuditService ..> SystemSetting : reads config
+    ReportService ..> AttendanceEngine
